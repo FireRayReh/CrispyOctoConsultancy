@@ -1,0 +1,69 @@
+# Sources for the Canada economic-opportunity dashboard.
+#
+# Each entry is an RSS/Atom feed. `category` groups items in the report.
+# Feeds are fetched live on every run — if a URL goes stale or a publisher
+# changes their feed path, the run doesn't fail: pipeline/fetch.py logs it
+# and the report's "Source Health" section flags it for you to fix here.
+#
+# Add/remove sources freely. Keep `name` short — it's shown in the report.
+
+sources:
+  # --- Government / policy -------------------------------------------------
+  - name: "Statistics Canada – The Daily"
+    category: government
+    url: "https://www150.statcan.gc.ca/n1/dai-quo/rss/rss-eng.xml"
+
+  - name: "Bank of Canada – Press Releases"
+    category: government
+    url: "https://www.bankofcanada.ca/content_type/press-releases/feed/"
+
+  - name: "Bank of Canada – Publications"
+    category: government
+    url: "https://www.bankofcanada.ca/content_type/staff-research/feed/"
+
+  - name: "Canada.ca – Innovation, Science and Economic Development News"
+    category: government
+    url: "https://www.canada.ca/en/innovation-science-economic-development/news/rss.xml"
+
+  - name: "Canada.ca – Finance Canada News"
+    category: government
+    url: "https://www.canada.ca/en/department-finance/news/rss.xml"
+
+  - name: "CanadaBuys – Tender Opportunities"
+    category: government
+    url: "https://canadabuys.canada.ca/en/tender-opportunities/feed"
+
+  - name: "Ontario Newsroom"
+    category: government
+    url: "https://news.ontario.ca/en/rss/feed"
+
+  # --- Consulting / bank economics white papers -----------------------------
+  - name: "RBC Thought Leadership"
+    category: consulting
+    url: "https://thoughtleadership.rbc.com/feed/"
+
+  - name: "TD Economics – Reports"
+    category: consulting
+    url: "https://economics.td.com/rss/reports"
+
+  - name: "Deloitte Canada – Insights"
+    category: consulting
+    url: "https://www2.deloitte.com/ca/en/insights.rss.html"
+
+  # --- StatCan / economic indicators (supplementary) ------------------------
+  - name: "Bank of Canada – Monetary Policy"
+    category: economic_indicators
+    url: "https://www.bankofcanada.ca/content_type/monetary-policy/feed/"
+
+  # --- Tech / startup ecosystem ----------------------------------------------
+  - name: "BetaKit"
+    category: startup_tech
+    url: "https://betakit.com/feed/"
+
+  - name: "IT World Canada"
+    category: startup_tech
+    url: "https://www.itworldcanada.com/feed"
+
+  - name: "Communitech News"
+    category: startup_tech
+    url: "https://www.communitech.ca/feed/"

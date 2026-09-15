@@ -1,0 +1,73 @@
+name: Canada Economic Opportunities Report
+
+on:
+  schedule:
+    # Daily digest — 12:00 UTC (8:00am ET / 7:00am during EDT... adjust to taste)
+    - cron: "0 12 * * *"
+    # Weekly roll-up — Monday 12:00 UTC
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+    inputs:
+      window:
+        description: "Report window"
+        required: true
+        default: "daily"
+        type: choice
+        options:
+          - daily
+          - weekly
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Determine window
+        id: window
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "window=${{ inputs.window }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 12 * * 1" ]; then
+            echo "window=weekly" >> "$GITHUB_OUTPUT"
+          else
+            echo "window=daily" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run pipeline
+        run: python main.py --window ${{ steps.window.outputs.window }}
+
+      - name: Commit report
+        run: |
+          git config user.name "econ-dashboard-bot"
+          git config user.email "actions@github.com"
+          git add reports/
+          git diff --cached --quiet || git commit -m "Add ${{ steps.window.outputs.window }} economic opportunities report"
+          git push
+
+      - name: Open issue with report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const window = "${{ steps.window.outputs.window }}";
+            const body = fs.readFileSync(`reports/latest-${window}.md`, 'utf8');
+            const title = `${window === 'weekly' ? 'Weekly' : 'Daily'} Economic Opportunities Report — ${new Date().toISOString().slice(0,10)}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['econ-report', window],
+            });
